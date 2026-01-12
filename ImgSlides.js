@@ -1,4 +1,4 @@
-import Button from '../../commons/button/button.js';
+import Button from '../../commons/button/Button.js';
 
 export default class ImgSlides extends HTMLElement {
 	/*

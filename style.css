@@ -1,7 +1,7 @@
 @layer default {
 	img-slides {
 		--_color-controls-primary: var(--color-controls-primary, wheat);
-		--_color-controls-secondary: var(--color-controls-secondary, #682f2f);
+		--_color-controls-secondary: var(--color-bullets-secondary, #682f2f);
 		--_size-bullets: var(--size-bullets, clamp(10px, 1vw, 2vw));
 		--_border-bullets: var(--border-bullets, 2px solid white);
 		display: flex;
@@ -12,7 +12,7 @@
 		overflow: hidden;
 		border: 0px solid black;
 
-		>img {
+		> img {
 			position: absolute;
 			/* position relative to un-img-slides */
 			opacity: 0;

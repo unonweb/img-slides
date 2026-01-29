@@ -142,6 +142,7 @@ export default class ImgSlides extends HTMLElement {
 			button.classList.add('bullet')
 			button.id = `bullet-${index}`
 			button.dataset.index = index
+			button.setAttribute('tabindex', '-1')
 			button.addEventListener('click', this._onClickBullet)
 			bullets.append(button)
 		})

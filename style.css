@@ -145,11 +145,14 @@
 			left: clamp(5px, 5%, 30px);
 		}
 
-		button:hover,
-		button:focus-visible {
-			scale: 1.1;
-			color: color-mix(in srgb, var(--_color-controls-primary) 70%, black);
-			-webkit-text-stroke-color: color-mix(in srgb, var(--_color-controls-primary) 30%, white);
+		@media(any-hover: hover) {
+
+			button:hover,
+			button:focus-visible {
+				scale: 1.1;
+				color: color-mix(in srgb, var(--_color-controls-primary) 70%, black);
+				-webkit-text-stroke-color: color-mix(in srgb, var(--_color-controls-primary) 30%, white);
+			}
 		}
 
 	}

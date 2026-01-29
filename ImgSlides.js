@@ -9,6 +9,8 @@ export default class ImgSlides extends HTMLElement {
 			[data-bullets]		// true, false
 			[data-controls]		// true, false, play, pause, arrows
 			[data-state]		// play, pause
+			[data-arrows]		// value accepted by Button class (unicode name)
+								// direction will be adjusted: singleLeftPointingAngleQuotationMark -> singleRightPointingAngleQuotationMark
 		@Attributes-CSS
 			[data-filter]		// sepia, grey, shadow
 			[data-transfx]		// flash, grey, blend, slide
@@ -32,7 +34,7 @@ export default class ImgSlides extends HTMLElement {
 		},
 	}
 
-	_log = true
+	_log = false
 	_currIndex = 0
 	_slideReverse = false
 	_intervallID
@@ -52,7 +54,7 @@ export default class ImgSlides extends HTMLElement {
 		if (newIndex === undefined) return
 		// change
 		this._currIndex = newIndex // update index
-		
+
 		// action
 		this._updateClasses(oldIndex, newIndex)
 	}
@@ -66,7 +68,7 @@ export default class ImgSlides extends HTMLElement {
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
-		
+
 		if (oldValue === null) return // prevent to be called on initialization
 		if (oldValue === newValue) return
 
@@ -81,7 +83,7 @@ export default class ImgSlides extends HTMLElement {
 	}
 
 	connectedCallback() {
-		
+
 		// init public
 		//this.dataset.theme ??= document.documentElement.dataset.theme
 		this.dataset.transfx ??= 'slide'
@@ -90,12 +92,13 @@ export default class ImgSlides extends HTMLElement {
 		//this.dataset.bullets ??= 'true'
 		//this.dataset.controls ??= 'true'
 		this.dataset.state ??= 'play'
+		this.dataset.arrows ??= 'singleLeftPointingAngleQuotationMark'
 
 		this._imgs = Array.from(this.querySelectorAll(':scope > img'))
-		
+
 		// init elements
 		this._initElements()
-		
+
 		if (this.dataset.bullets === 'true') {
 			this._insertBullets(this._imgs, this)
 		}
@@ -149,27 +152,29 @@ export default class ImgSlides extends HTMLElement {
 	_insertControls() {
 		let controls = document.createElement('div')
 		controls.className = 'controls'
-		
+		// play
 		if (this.dataset.controls === 'true' || this.dataset.controls.includes('play')) {
 			let play = (new Button({ html: 'svg', svg: 'play', className: 'play' }))
 			play.addEventListener('click', this._onClickPlay)
-			controls.append(play)	
+			controls.append(play)
 		}
-		
+		// pause
 		if (this.dataset.controls === 'true' || this.dataset.controls.includes('pause')) {
 			let pause = (new Button({ html: 'svg', svg: 'pause', className: 'pause' }))
 			pause.addEventListener('click', this._onClickPause)
 			controls.append(pause)
 		}
-		
+		// arrows
 		if (this.dataset.controls.includes('arrows')) {
-			/* <button title="left" aria-label="${imgDialog.translate('left')}" class="arrows left"></button> */
-			let left = (new Button({ html: 'unicode', unicode: 'singleLeftPointingAngleQuotationMark', className: 'left arrows' }))
+			
+			let unicodeNameLeft = this.dataset.arrows.replace('Right', 'Left').replace('right', 'left')
+			let unicodeNameRight = this.dataset.arrows.replace('Left', 'Right').replace('left', 'right')
+
+			let left = (new Button({ html: 'unicode', unicode: unicodeNameLeft, className: 'left arrows' }))
 			left.addEventListener('click', this._onClickLeft)
 			controls.append(left)
 
-			/* <button title="left" aria-label="${imgDialog.translate('left')}" class="arrows left"></button> */
-			let right = (new Button({ html: 'unicode', unicode: 'singleRightPointingAngleQuotationMark', className: 'right arrows' }))
+			let right = (new Button({ html: 'unicode', unicode: unicodeNameRight, className: 'right arrows' }))
 			right.addEventListener('click', this._onClickRight)
 			controls.append(right)
 		}
@@ -180,7 +185,7 @@ export default class ImgSlides extends HTMLElement {
 	_onClickPlay = (evt) => {
 		this.dataset.state = 'play'
 		if (this._intervallID === null) {
-			this._intervallID = setInterval(this._autoSlideIndex.bind(this), this.transtime)	
+			this._intervallID = setInterval(this._autoSlideIndex.bind(this), this.transtime)
 		}
 	}
 
@@ -188,7 +193,7 @@ export default class ImgSlides extends HTMLElement {
 		this.dataset.state = 'pause'
 		clearInterval(this._intervallID)
 		this._intervallID = null
-	}	
+	}
 
 	_onClickPlayPause = (evt) => {
 		if (this.dataset.state === 'play') {

@@ -3,18 +3,19 @@ import Button from '../../commons/button/Button.js';
 export default class ImgSlides extends HTMLElement {
 	/*
 		@Attributes
-			[data-scroll]		// true, false
+			[data-scroll]			true, false
 		@Attributes-JS
-			[data-transtime]	// 4 (seconds)
-			[data-bullets]		// true, false
-			[data-controls]		// true, false, play, pause, arrows
-			[data-state]		// play, pause
-			[data-arrows]		// value accepted by Button class (unicode name)
-								// direction will be adjusted: singleLeftPointingAngleQuotationMark -> singleRightPointingAngleQuotationMark
+			[data-transtime]		4 (seconds)
+			[data-bullets]			true, false
+			[data-controls]			true, false, play, pause, arrows
+			[data-state]			play, pause
+			[data-arrows]			value accepted by Button class (unicode name)
+									direction will be adjusted: singleLeftPointingAngleQuotationMark -> singleRightPointingAngleQuotationMark
+			[data-initial-delay]	2 (seconds)
 		@Attributes-CSS
-			[data-filter]		// sepia, grey, shadow
-			[data-transfx]		// flash, grey, blend, slide
-			[data-layout]		// flex-columns, flex-masonry, flex-grow
+			[data-filter]			sepia, grey, shadow
+			[data-transfx]			flash, grey, blend, slide
+			[data-layout]			flex-columns, flex-masonry, flex-grow
 		@Children
 			<img>
 		Description
@@ -42,6 +43,10 @@ export default class ImgSlides extends HTMLElement {
 	
 	get transtime() {
 		return Number(this.dataset.transtime) * 1000;
+	}
+
+	get initialDelay() {
+		return Number(this.dataset.initialDelay) * 1000;
 	}
 
 	set currIndex(newIndex) {
@@ -93,6 +98,7 @@ export default class ImgSlides extends HTMLElement {
 		//this.dataset.controls ??= 'true'
 		this.dataset.state ??= 'play'
 		this.dataset.arrows ??= 'singleLeftPointingAngleQuotationMark'
+		this.dataset.initialDelay ??= 2000
 
 		this._imgs = Array.from(this.querySelectorAll(':scope > img'))
 
@@ -121,13 +127,16 @@ export default class ImgSlides extends HTMLElement {
 
 			this._imgs.forEach(el => el.style.setProperty('transition', 'unset')) // this hack is necessary to get rid of any transitions during the initial load
 			this._imgs[this.currIndex].classList.add('show') // showcase first img
+			
 			setTimeout(() => {
 				// delay start of transfx
 				if (this._log) console.log('starting setInterval... ')
+				
 				this._imgs.forEach((el) => el.style.removeProperty('transition'))
+				// setInterval
 				this._intervallID = setInterval(this._autoSlideIndex.bind(this), this.transtime)
 
-			}, 3000)
+			}, this.initialDelay)
 		}
 	}
 
@@ -144,6 +153,11 @@ export default class ImgSlides extends HTMLElement {
 			button.dataset.index = index
 			button.setAttribute('tabindex', '-1')
 			button.addEventListener('click', this._onClickBullet)
+
+			if (index === this.currIndex) {
+				button.classList.add('bullet-current')	
+			}
+			
 			bullets.append(button)
 		})
 		this._bulletsCreated = true
